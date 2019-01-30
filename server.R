@@ -17,14 +17,16 @@ shinyServer(function(input, output){
   output$globe <- renderGvis({
     gvisGeoChart(country, locationvar="Country", 
                  colorvar="total",
-                 options=list(projection="kavrayskiy-vii",width= 430))
+                 options=list(projection="kavrayskiy-vii",width = "automatic",
+                              height = "automatic"))
   })
   
   output$map <- renderGvis({
     gvisGeoChart(top_state, locationvar="State",colorvar="total",
                  options=list(region="US", 
                               displayMode="regions", 
-                              resolution="provinces", displayMode="text", width=430))
+                              resolution="provinces", displayMode="text", width = "automatic",
+                              height = "automatic"))
    
   })
   
@@ -78,13 +80,13 @@ shinyServer(function(input, output){
       }
     
     gvisPieChart(top_job, labelvar= input$category , numvar="p", 
-                 options=list(height=250, width=400,is3D=T, title='Top Occupation'))
+                 options=list(height= 220,width=400,is3D=T, title='Top Occupation',fontSize=9))
     })
   
   output$topemp<-renderGvis({
     
     gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer'))
+                 options=list(height=300,is3D=T,title='Top Employer',fontSize=9))
   })
   
   
@@ -141,23 +143,23 @@ shinyServer(function(input, output){
         }
     
     gvisPieChart(top_job1, labelvar= input$category , numvar="p", 
-                 options=list(height=250, width=400,is3D=T, title='Top Occupation'))
+                 options=list(height= 220, width=400,is3D=T, title='Top Occupation',fontSize=9))
   })
   
   output$topemp1<-renderGvis({
     
     gvisPieChart(top_emp1,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer'))
+                 options=list( height=300,is3D=T,title='Top Employer',fontSize=9))
   })
   
   
   output$wage1<-renderGvis({
-    gvisBarChart(range_wage1, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range'))
+    gvisBarChart(range_wage1, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range',legend='none'))
   })
   
 
   output$edu<-renderGvis({
-    gvisBarChart(education, xvar = "Education", yvar = "X2017", options = list(height=300,title='Education'))
+    gvisBarChart(education, xvar = "Education", yvar = "X2017", options = list(height=300,title='Education',legend='none'))
   })
   
   
@@ -206,23 +208,23 @@ shinyServer(function(input, output){
         }
     
     gvisPieChart(top_job2, labelvar= input$category , numvar="p", 
-                 options=list(height=250, width=400,is3D=T, title='Top Occupation'))
+                 options=list(height= 220, width=400,is3D=T, title='Top Occupation',fontSize=9))
   })
   
   output$topemp2<-renderGvis({
     
     gvisPieChart(top_emp2,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer'))
+                 options=list( height=300,is3D=T,title='Top Employer',fontSize=9))
   })
   
   
   output$wage2<-renderGvis({
-    gvisBarChart(range_wage2, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range'))
+    gvisBarChart(range_wage2, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range',legend='none'))
   })
   
  
   output$edu1<-renderGvis({
-    gvisBarChart(education, xvar = "Education", yvar = "X2016", options = list(height=300,title='Education'))
+    gvisBarChart(education, xvar = "Education", yvar = "X2016", options = list(height=300,title='Education',legend='none'))
   })
   
   
