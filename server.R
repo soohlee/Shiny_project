@@ -41,7 +41,7 @@ shinyServer(function(input, output){
   
   output$avgwagebox <- renderValueBox({
     
-    valueBox(paste("$",round(mean(range_wage$total))),"Avg Wage",
+    valueBox(paste("$",round(mean(range_wage$total))),"Average Wage",
              icon = icon("dollar-sign"), color = "yellow")
 })
   
@@ -72,23 +72,25 @@ shinyServer(function(input, output){
   output$topemp<-renderGvis({
     
     gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,title='Top Employer'))
+                 options=list( height=300,is3D=T,title='Top Employer'))
   })
   
   
   output$wage<-renderGvis({
-    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list( height=300,title='Wage Range',legend="None"))
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "total", options = list( height=300,is3D=T,title='Wage Range'))
   })
   
   output$age<-renderGvis({
-    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range',legend="None"))
+    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range'))
   })
   
   
   output$h1btrend <- renderPlotly({
     ggplot(th1b, aes(x=year))+ 
-      geom_bar( aes( y=n_Approval),alpha=0.75, stat = "identity")+ geom_line(data=th1b, aes(y=ratio), colour = "red", size=1)+
-      labs(x="Year",y="Approval",title=" H1B Approval trends from 2007-2018")+  theme_bw()
+      geom_bar( aes( y=n_Approval),alpha=0.55,fill="blue", stat = "identity")+
+      geom_line(data=th1b, aes(y=ratio), colour = "red", size=1)+
+      labs(x="Year",y="Approval",title=" H1B Approval trends from 2007-2018")+ 
+      theme_classic()
     
  
     

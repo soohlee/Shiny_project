@@ -23,9 +23,9 @@ shinyUI(dashboardPage(skin="green",
                         tabItems(
                           tabItem(tabName = "trend",
                                   
-                                  fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=230),width="90%"),
-                                           box(title="By country of origin", htmlOutput("globe",width="80%")),
-                                           box(title= "By State",htmlOutput("map"))
+                                  fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=300),width="90%")),
+                                  fluidRow(box(title="By country of origin", htmlOutput("globe",width="100%"),width=6),
+                                           box(title= "By State",htmlOutput("map"),width=6)
                                            
                           )),
                           tabItem(tabName = "h1b",
@@ -33,11 +33,11 @@ shinyUI(dashboardPage(skin="green",
                                            valueBoxOutput("topjobbox"),
                                            valueBoxOutput("topempbox"),
                                            valueBoxOutput("avgwagebox")),
-                                  fluidRow(box(selectInput("category","By Category",choices=c("Job","SOC"),selected="Job",width=3),
-                                               htmlOutput("job"), height = 300),
-                                           box(htmlOutput("topemp"), height = 300)),
-                                 fluidRow(box(htmlOutput("wage"), height = 280),
-                                           box(htmlOutput("age"), height = 280))
+                                  fluidRow(box(selectInput("category","By Category",choices=c("Job","SOC"),selected="Job"),
+                                               htmlOutput("job"), width=6),
+                                           box(htmlOutput("topemp"), width=6)),
+                                 fluidRow(box(htmlOutput("wage"), width=6),
+                                           box(htmlOutput("age"), width=6))
                                                     
                                   ),
                           tabItem(tabName = "greencard",

@@ -62,7 +62,7 @@ top_emp = fy18 %>%
   summarise(total=n())%>%
   mutate(p_emp= round(total/sum(total)*100,1))%>%
   arrange(desc(p_emp))%>%
-  head(10)
+  head(7)
 
 top_emp
 #range_wage
@@ -72,9 +72,8 @@ top_emp
 #ave wage 
 options("scipen"=100, "digits"=4)
 range_wage = fy18 %>%
-  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),right=FALSE))%>%
+  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),dig.lab=10,right=FALSE))%>%
   summarise(total=n())%>%
-  mutate(p_wage= total/sum(total)*100)%>%
   arrange(as.integer(Wage))
 
 range_wage
