@@ -16,7 +16,7 @@ library(plotly)
 
 th1b<-read.csv("./data/tr_h1b.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
 h1b_2018<-read.csv("./data/H-1BFY2018.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-
+age<-read.csv("./data/age.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
 
 
 clean_amount = function(col){
@@ -46,7 +46,7 @@ fy18<-h1b_2018 %>%
   mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
   rename(State=WORKSITE_STATE)%>%
   rename(Job_=SOC_NAME)
-  
+colnames(fy18)
 
 # top_state
 top_state = fy18 %>%
@@ -61,7 +61,8 @@ top_emp = fy18 %>%
   group_by(Employer)%>%
   summarise(total=n())%>%
   mutate(p_emp= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_emp))
+  arrange(desc(p_emp))%>%
+  head(10)
 
 top_emp
 #range_wage
@@ -74,6 +75,7 @@ range_wage = fy18 %>%
   summarise(total=n())%>%
   mutate(p_wage= total/sum(total)*100)%>%
   arrange(as.numeric(Wage))
+
 range_wage
 
 #top_job
@@ -82,7 +84,8 @@ top_job = fy18 %>%
   group_by(Job)%>%
   summarise(total=n())%>%
   mutate(p_job= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_job))
+  arrange(desc(p_job))%>%
+  head(10,p_job)
 
 top_job
 
@@ -94,13 +97,15 @@ top_soc = fy18 %>%
   group_by(Job_)%>%
   summarise(total=n())%>%
   mutate(p_soc= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_soc))
+  arrange(desc(p_soc))%>%
+  head(10)
 
 top_soc
 
-# create variable with colnames as choice
-#choice <- colnames(state_stat)[-1]
-#choice
+#age
+
+age <- age %>%
+  mutate(total= clean_amount(total))
 
 # create variable with colnames as choice
 choice <- colnames(h1b_2018)

@@ -6,7 +6,6 @@ shinyServer(function(input, output){
     gvisGeoChart(country, locationvar="Country", 
                  colorvar="total",
                  options=list(projection="kavrayskiy-vii",width= 430))
-    
   })
   
   output$map <- renderGvis({
@@ -27,44 +26,53 @@ shinyServer(function(input, output){
     
     max_value<-max(top_job$total)
     t_job<- top_job$Job[top_job$total == max_value]
+    
     valueBox(max_value,t_job, icon = icon("briefcase"),color='purple')
-  })
+})
+  
+  
   output$topempbox <- renderValueBox({
+    
     max_value<-max(top_emp$p_emp)
     t_emp<- top_emp$Employer[top_emp$p_emp == max_value]
     
     valueBox(paste(max_value," %"),t_emp,  icon = icon("building"))
-  })
+})
   
   output$avgwagebox <- renderValueBox({
+    
     valueBox(paste("$",round(mean(range_wage$total))),"Avg Wage",
-            icon = icon("dollar-sign"), color = "yellow")})
+             icon = icon("dollar-sign"), color = "yellow")
+})
   
  
   #plots 
   
   output$job<-renderGvis({
+
     top_job = fy18 %>%
-      group_by(Input$PieChart)%>%
+      group_by(Input$category)%>%
       summarise(total=n())%>%
       mutate(p= round(total/sum(total)*100,1))%>%
-      arrange(desc(p))
+      arrange(desc(p))%>%
+      head(10,p)
     
-    gvisPieChart(top_job, labelvar = Input$PieChart,numvar="p", options=list(width=200, height=300,title='Top Occupation'))
-  })
+    gvisPieChart(top_job, Input$category , numvar="p", 
+                 options=list(height=300,title='Top Occupation', tooltip = "{text:'percentage'}"))
+    })
+  
   output$topemp<-renderGvis({
     
-    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , options=list(width=200, height=300,title='Top Employer'))
+    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , options=list( height=300,title='Top Employer'))
   })
   
-  output$soc<-renderGvis({
-    
-    gvisPieChart(top_soc,labelvar = "job_",numvar = "p_soc",  options=list(width=200, height=300,title='Top Job Category'))
-  })
   
   output$wage<-renderGvis({
-    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list(width=200, height=300,title='Top occupation'))
- 
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list( height=300,title='Wage Range'))
+  })
+  
+  output$age<-renderGvis({
+    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range'))
   })
   
   
