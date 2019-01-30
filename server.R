@@ -41,7 +41,7 @@ shinyServer(function(input, output){
   
   output$avgwagebox <- renderValueBox({
     
-    valueBox(paste("$",round(mean(range_wage$total))),"Average Wage",
+    valueBox(paste("$",round(mean(range_wage$total))),"AVERAGE WAGE",
              icon = icon("dollar-sign"), color = "yellow")
 })
   
@@ -72,7 +72,7 @@ shinyServer(function(input, output){
   output$topemp<-renderGvis({
     
     gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer'))
+                 options=list( height=300,is3D=T,title='Top Employer',pieSliceText='label'))
   })
   
   
@@ -97,10 +97,10 @@ shinyServer(function(input, output){
   })
 
   
-  # show data using DataTable
-# output$table <- DT::renderDataTable({
-#   datatable(h1b_2018) %>%
-#     formatStyle(colnames(h1b_2018), background="skyblue", fontWeight='bold')
-#   })
+#show data using DataTable
+ output$table <- DT::renderDataTable({
+  datatable(h1b_2018) %>%
+    formatStyle(colnames(h1b_2018), background="skyblue", fontWeight='bold')
+  })
  })
 

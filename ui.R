@@ -24,8 +24,8 @@ shinyUI(dashboardPage(skin="green",
                           tabItem(tabName = "trend",
                                   
                                   fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=300),width="90%")),
-                                  fluidRow(box(title="By country of origin", htmlOutput("globe",width="100%"),width=6),
-                                           box(title= "By State",htmlOutput("map"),width=6)
+                                  fluidRow(box(title="Approval trend by country of origin", htmlOutput("globe",width="100%"),width=6),
+                                           box(title= "Approval trend by state",htmlOutput("map",width="100%"),width=6)
                                            
                           )),
                           tabItem(tabName = "h1b",
@@ -42,10 +42,10 @@ shinyUI(dashboardPage(skin="green",
                                   ),
                           tabItem(tabName = "greencard",
                                   fluidRow(box(title="in prep..."))
-                          ))
+                          ),
                 
-                          #         )),
-                          # tabItem(tabName = "data",
-                          #             fluidRow(box(DT::dataTableOutput("table"), width = 12)))
+                        
+                          tabItem(tabName = "data",
+                                      fluidRow(box(DT::dataTableOutput("table"), width = 12)))
                           )) 
-)
+))
