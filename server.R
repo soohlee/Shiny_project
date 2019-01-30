@@ -72,12 +72,12 @@ shinyServer(function(input, output){
   output$topemp<-renderGvis({
     
     gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer',pieSliceText='label'))
+                 options=list( height=300,is3D=T,title='Top Employer'))
   })
   
   
   output$wage<-renderGvis({
-    gvisBarChart(range_wage, xvar = "Wage", yvar = "total", options = list( height=300,is3D=T,title='Wage Range'))
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range'))
   })
   
   output$age<-renderGvis({
