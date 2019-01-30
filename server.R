@@ -49,30 +49,39 @@ shinyServer(function(input, output){
   #plots 
   
   output$job<-renderGvis({
+    if (input$category =="Job"){
 
     top_job = fy18 %>%
-      group_by(ifelse(colnames(fy18)[1]==Input$category,Job,SOC))%>%
+      group_by(Job)%>%
       summarise(total=n())%>%
       mutate(p= round(total/sum(total)*100,1))%>%
       arrange(desc(p))%>%
-      head(10,p)
+      head(7,p)}else {
+        top_job = fy18 %>%
+          group_by(SOC)%>%
+          summarise(total=n())%>%
+          mutate(p= round(total/sum(total)*100,1))%>%
+          arrange(desc(p))%>%
+          head(7,p)
+      }
     
-    gvisPieChart(top_job, labelvar= Input$category , numvar="p", 
-                 options=list(height=300,title='Top Occupation', tooltip = "{text:'percentage'}"))
+    gvisPieChart(top_job, labelvar= input$category , numvar="p", 
+                 options=list(height=250, width=400,is3D=T, title='Top Occupation'))
     })
   
   output$topemp<-renderGvis({
     
-    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , options=list( height=300,title='Top Employer'))
+    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
+                 options=list( height=300,title='Top Employer'))
   })
   
   
   output$wage<-renderGvis({
-    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list( height=300,title='Wage Range'))
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list( height=300,title='Wage Range',legend="None"))
   })
   
   output$age<-renderGvis({
-    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range'))
+    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range',legend="None"))
   })
   
   

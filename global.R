@@ -70,11 +70,12 @@ top_emp
 
 
 #ave wage 
+options("scipen"=100, "digits"=4)
 range_wage = fy18 %>%
   group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),right=FALSE))%>%
   summarise(total=n())%>%
   mutate(p_wage= total/sum(total)*100)%>%
-  arrange(as.numeric(Wage))
+  arrange(as.integer(Wage))
 
 range_wage
 
