@@ -15,8 +15,8 @@ shinyUI(dashboardPage(skin="green",
                           tabItem(tabName = "trend",
                                   
                                   fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=250),width="90%"),
-                                           box(htmlOutput("globe")),
-                                           box(htmlOutput("map"))
+                                           box(title="By country of origin", htmlOutput("globe")),
+                                           box(title= "By State",htmlOutput("map"))
                                            
                           )),
                           tabItem(tabName = "h1b",
@@ -24,16 +24,19 @@ shinyUI(dashboardPage(skin="green",
                                            valueBoxOutput("topjobbox"),
                                            valueBoxOutput("topempbox"),
                                            valueBoxOutput("avgwagebox")),
-                                  fluidRow(box(radioButtons("Year", "Year",
-                                                            c("2016" = "2016",
-                                                              "2017" = "2017",
-                                                              "2018" = "2018")),
-                                                selectInput("PieChart", "Input Test",
-                                                            choices = c("Job","Employer","Wage","Soc"),selected="Job"),
+                                  fluidRow(box(selectInput("PieChart", "Item to Display",
+                                                            choices = c("Job","Employer","Wage_Range","Soc"),selected="Wage_Range"),
                                                width=4),
-                                                    box(htmlOutput("job"), height = 300))
+                                                    box(htmlOutput("job"), height = 300),
+                                           box( 
+                                             htmlOutput("topemp"), height = 300),
+                                           box(htmlOutput("soc"), height = 300),
+                                           box(htmlOutput("wage"), height = 300))
                                                     
-                                  ))
+                                  ),
+                          tabItem(tabName = "greencard",
+                                  fluidRow(box(title="in prep..."))
+                          ))
                 
                           #         )),
                           # tabItem(tabName = "data",

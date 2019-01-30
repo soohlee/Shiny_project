@@ -10,7 +10,7 @@ shinyServer(function(input, output){
   })
   
   output$map <- renderGvis({
-    gvisGeoChart(top_state, locationvar="WORKSITE_STATE",colorvar="total",
+    gvisGeoChart(top_state, locationvar="State",colorvar="total",
                  options=list(region="US", 
                               displayMode="regions", 
                               resolution="provinces", displayMode="text",width=430))
@@ -44,19 +44,33 @@ shinyServer(function(input, output){
   #plots 
   
   output$job<-renderGvis({
-    gvisPieChart(g(), options=list(width=200, height=300,title='Top occupation'))
+    top_job = fy18 %>%
+      group_by(Input$PieChart)%>%
+      summarise(total=n())%>%
+      mutate(p= round(total/sum(total)*100,1))%>%
+      arrange(desc(p))
+    
+    gvisPieChart(top_job, labelvar = Input$PieChart,numvar="p", options=list(width=200, height=300,title='Top Occupation'))
   })
-  
   output$topemp<-renderGvis({
     
-    gvisPieChart(g(), options=list(width=200, height=300,title='Top occupation'))
+    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , options=list(width=200, height=300,title='Top Employer'))
   })
-
+  
+  output$soc<-renderGvis({
+    
+    gvisPieChart(top_soc,labelvar = "job_",numvar = "p_soc",  options=list(width=200, height=300,title='Top Job Category'))
+  })
+  
+  output$wage<-renderGvis({
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "p_wage", options = list(width=200, height=300,title='Top occupation'))
+ 
+  })
   
   
   output$h1btrend <- renderPlotly({
     ggplot(th1b, aes(x=year))+ 
-      geom_bar( aes( y=n_Approval),alpha=0.75, stat = "identity")+ geom_line(data=th1b, aes(y=ratio), colour = "green", size=1.5)+
+      geom_bar( aes( y=n_Approval),alpha=0.75, stat = "identity")+ geom_line(data=th1b, aes(y=ratio), colour = "red", size=1)+
       labs(x="Year",y="Approval",title=" H1B Approval trends from 2007-2018")+  theme_bw()
     
  

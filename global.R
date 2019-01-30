@@ -18,6 +18,7 @@ th1b<-read.csv("./data/tr_h1b.csv",stringsAsFactors=FALSE, encoding = "UTF-8",he
 h1b_2018<-read.csv("./data/H-1BFY2018.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
 
 
+
 clean_amount = function(col){
   tmp <- gsub(",","",col)
   tmp <- as.numeric(tmp)
@@ -36,20 +37,27 @@ country<-country %>% mutate(H1B=ifelse(H1B=="D",0,ifelse(H1B=="-",0,H1B)))%>%
   mutate(total=clean_amount(H1B))
 
 #map plot state 
-# top_state
-top_state = h1b_2018 %>%
-  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM) %>%
+
+fy18<-h1b_2018 %>%
+  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM,SOC_NAME) %>%
   filter(CASE_STATUS=="CERTIFIED")%>%
-  group_by(WORKSITE_STATE)%>%
+  rename(Employer=EMPLOYER_NAME)%>%
+  rename(Job = JOB_TITLE)%>%
+  mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
+  rename(State=WORKSITE_STATE)%>%
+  rename(Job_=SOC_NAME)
+  
+
+# top_state
+top_state = fy18 %>%
+  group_by(State)%>%
   summarise(total=n())%>%
   mutate(p_state= round(total/sum(total)*100,1))%>%
   arrange(desc(p_state))
 
 #top_employer
 
-top_emp = h1b_2018 %>%
-  filter(CASE_STATUS=="CERTIFIED")%>%
-  rename(Employer=EMPLOYER_NAME)%>%
+top_emp = fy18 %>%
   group_by(Employer)%>%
   summarise(total=n())%>%
   mutate(p_emp= round(total/sum(total)*100,1))%>%
@@ -61,22 +69,16 @@ top_emp
 
 
 #ave wage 
-range_wage = h1b_2018 %>%
-  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM) %>%
-  filter(CASE_STATUS=="CERTIFIED")%>%
-  mutate(wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
-  group_by(wage= cut(wage,breaks=seq(0,200000,by= 25000),right=FALSE))%>%
+range_wage = fy18 %>%
+  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),right=FALSE))%>%
   summarise(total=n())%>%
   mutate(p_wage= total/sum(total)*100)%>%
-  arrange(as.numeric(wage))
-mean(range_wage$total)
+  arrange(as.numeric(Wage))
 range_wage
 
 #top_job
 
-top_job = h1b_2018 %>%
-  filter(CASE_STATUS=="CERTIFIED")%>%
-  rename(Job = JOB_TITLE)%>%
+top_job = fy18 %>%
   group_by(Job)%>%
   summarise(total=n())%>%
   mutate(p_job= round(total/sum(total)*100,1))%>%
@@ -88,10 +90,8 @@ top_job
 
 #soc
 
-top_soc = h1b_2018 %>%
-  filter(CASE_STATUS=="CERTIFIED")%>%
-  rename(Soc = SOC_NAME)%>%
-  group_by(Soc)%>%
+top_soc = fy18 %>%
+  group_by(Job_)%>%
   summarise(total=n())%>%
   mutate(p_soc= round(total/sum(total)*100,1))%>%
   arrange(desc(p_soc))
