@@ -23,8 +23,8 @@ shinyUI(dashboardPage(skin="green",
                         tabItems(
                           tabItem(tabName = "trend",
                                   
-                                  fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=250),width="90%"),
-                                           box(title="By country of origin", htmlOutput("globe")),
+                                  fluidRow(box(plotlyOutput("h1btrend",width = "100%",height=230),width="90%"),
+                                           box(title="By country of origin", htmlOutput("globe",width="80%")),
                                            box(title= "By State",htmlOutput("map"))
                                            
                           )),
@@ -35,9 +35,9 @@ shinyUI(dashboardPage(skin="green",
                                            valueBoxOutput("avgwagebox")),
                                   fluidRow(box(selectInput("category","By Category",choices=c("Job","SOC"),selected="Job"),
                                                htmlOutput("job"), height = 300),
-                                           box(htmlOutput("topemp"), height = 300),
-                                           box(htmlOutput("wage"), height = 300)),
-                                           box(htmlOutput("age"), height = 300)
+                                           box(htmlOutput("topemp"), height = 300)),
+                                 fluidRow(box(htmlOutput("wage"), height = 280),
+                                           box(htmlOutput("age"), height = 280))
                                                     
                                   ),
                           tabItem(tabName = "greencard",

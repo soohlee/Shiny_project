@@ -12,7 +12,7 @@ shinyServer(function(input, output){
     gvisGeoChart(top_state, locationvar="State",colorvar="total",
                  options=list(region="US", 
                               displayMode="regions", 
-                              resolution="provinces", displayMode="text",width=430))
+                              resolution="provinces", displayMode="text", width=430))
    
   })
   
@@ -51,13 +51,13 @@ shinyServer(function(input, output){
   output$job<-renderGvis({
 
     top_job = fy18 %>%
-      group_by(Input$category)%>%
+      group_by(ifelse(colnames(fy18)[1]==Input$category,Job,SOC))%>%
       summarise(total=n())%>%
       mutate(p= round(total/sum(total)*100,1))%>%
       arrange(desc(p))%>%
       head(10,p)
     
-    gvisPieChart(top_job, Input$category , numvar="p", 
+    gvisPieChart(top_job, labelvar= Input$category , numvar="p", 
                  options=list(height=300,title='Top Occupation', tooltip = "{text:'percentage'}"))
     })
   

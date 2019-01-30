@@ -45,7 +45,7 @@ fy18<-h1b_2018 %>%
   rename(Job = JOB_TITLE)%>%
   mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
   rename(State=WORKSITE_STATE)%>%
-  rename(Job_=SOC_NAME)
+  rename(SOC=SOC_NAME)
 colnames(fy18)
 
 # top_state
@@ -94,7 +94,7 @@ top_job
 #soc
 
 top_soc = fy18 %>%
-  group_by(Job_)%>%
+  group_by(SOC)%>%
   summarise(total=n())%>%
   mutate(p_soc= round(total/sum(total)*100,1))%>%
   arrange(desc(p_soc))%>%
@@ -108,6 +108,6 @@ age <- age %>%
   mutate(total= clean_amount(total))
 
 # create variable with colnames as choice
-choice <- colnames(h1b_2018)
+choice <- colnames(fy18)
 choice
 
