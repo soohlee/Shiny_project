@@ -3,7 +3,11 @@ shinyUI(dashboardPage(skin="green",
                                   dashboardSidebar(width=300,
                                                    sidebarMenu(
                                                      menuItem("Immigrant Profiles", tabName = "trend", icon = icon("address-card")),
-                                                     menuItem("H1B", tabName = "h1b", icon = icon("check")),
+                                                     menuItem("H1B", tabName = "h1b", icon = icon("check"),
+                                                              menuSubItem("2018", tabName = "2018"),
+                                                              menuSubItem("2017", tabName = "2017"),
+                                                              menuSubItem("2016", tabName = "2016")
+                                                     ),
                                                      menuItem("Green Card", tabName = "greencard", icon = icon("check")),
                                                      menuItem("Data", tabName = "data", icon = icon("database"))
                                                   )),
@@ -28,7 +32,8 @@ shinyUI(dashboardPage(skin="green",
                                            box(title= "Approval trend by state",htmlOutput("map",width="100%"),width=6)
                                            
                           )),
-                          tabItem(tabName = "h1b",
+                          tabItem(tabName = "h1b"),
+                          tabItem(tabName = "2018",
                                   fluidRow( 
                                            valueBoxOutput("topjobbox"),
                                            valueBoxOutput("topempbox"),
@@ -40,6 +45,32 @@ shinyUI(dashboardPage(skin="green",
                                            box(htmlOutput("age"), width=6))
                                                     
                                   ),
+                          tabItem(tabName = "2017",
+                                  fluidRow( 
+                                    valueBoxOutput("topjobbox1"),
+                                    valueBoxOutput("topempbox1"),
+                                    valueBoxOutput("avgwagebox1")),
+                                  fluidRow(box(selectInput("category1","By Category",choices=c("Job","SOC"),selected="Job"),
+                                               htmlOutput("job1"), width=6),
+                                           box(htmlOutput("topemp1"), width=6)),
+                                  fluidRow(box(htmlOutput("wage1"), width=6),
+                                           box(htmlOutput("edu"), width=6))
+                                           
+                                  
+                          ),
+                          tabItem(tabName = "2016",
+                                  fluidRow( 
+                                    valueBoxOutput("topjobbox2"),
+                                    valueBoxOutput("topempbox2"),
+                                    valueBoxOutput("avgwagebox2")),
+                                  fluidRow(box(selectInput("category2","By Category",choices=c("Job","SOC"),selected="Job"),
+                                               htmlOutput("job2"), width=6),
+                                           box(htmlOutput("topemp2"), width=6)),
+                                  fluidRow(box(htmlOutput("wage2"), width=6),
+                                           box(htmlOutput("edu1"), width=6))
+                                           
+                                  
+                          ),
                           tabItem(tabName = "greencard",
                                   fluidRow(box(title="in prep..."))
                           ),
