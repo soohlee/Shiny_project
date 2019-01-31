@@ -37,9 +37,16 @@ shinyServer(function(input, output){
   #show statistics using infoBox
   
   output$topjobbox <- renderValueBox({
-    
-    max_value<-max(top_job$total)
-    t_job<- top_job$Job[top_job$total == max_value]
+    if (input$category =="Job"){
+      
+      top_job = top_job%>%
+        mutate(m=Job)
+        }else {
+          top_job = top_soc%>%
+            mutate(m=SOC)
+        }
+    max_value=max(top_job$total)
+    t_job= top_job$m[top_job$total == max_value]
     
     valueBox(max_value,t_job, icon = icon("briefcase"),color='purple')
 })
@@ -47,8 +54,8 @@ shinyServer(function(input, output){
   
   output$topempbox <- renderValueBox({
     
-    max_value<-max(top_emp$p_emp)
-    t_emp<- top_emp$Employer[top_emp$p_emp == max_value]
+    max_value<-max(top_emp$p)
+    t_emp<- top_emp$Employer[top_emp$p == max_value]
     
     valueBox(paste(max_value," %"),t_emp,  icon = icon("building"))
 })
@@ -63,56 +70,57 @@ shinyServer(function(input, output){
   #plots 
   
   output$job<-renderGvis({
-    if (input$category =="Job"){
-
-    top_job = fy18 %>%
-      group_by(Job)%>%
-      summarise(total=n())%>%
-      mutate(p= round(total/sum(total)*100,1))%>%
-      arrange(desc(p))%>%
-      head(7,p)}else {
-        top_job = fy18 %>%
-          group_by(SOC)%>%
-          summarise(total=n())%>%
-          mutate(p= round(total/sum(total)*100,1))%>%
-          arrange(desc(p))%>%
-          head(7,p)
-      }
     
-    gvisPieChart(top_job, labelvar= input$category , numvar="p", 
-                 options=list(height= 220,width=400,is3D=T, title='Top Occupation',fontSize=9))
+    if (input$category =="Job"){
+      
+      plot_job = top_job
+      }else {
+      plot_job = top_soc
+            
+        }
+    
+    gvisPieChart(plot_job, labelvar= input$category , numvar="p", 
+                 options=list( height=300,is3D=T, title='Top Occupation',fontSize=12))
     })
   
   output$topemp<-renderGvis({
     
-    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list(height=300,is3D=T,title='Top Employer',fontSize=9))
+    gvisPieChart(top_emp,labelvar = "Employer",numvar = "p" , 
+                 options=list(height=300,is3D=T,title='Top Employer',fontSize=12))
   })
   
   
   output$wage<-renderGvis({
-    gvisBarChart(range_wage, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range'))
+    gvisBarChart(range_wage, xvar = "Wage", yvar = "total", options = list( height=300,title='Wage Range',legend='none'))
   })
   
   output$age<-renderGvis({
-    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range'))
+    gvisBarChart(age, xvar = "AGE", yvar = "total", options = list(height=300,title='Age Range',legend='none'))
   })
   
   
   ##2017
   #show statistics using infoBox
   output$topjobbox1 <- renderValueBox({
+    if (input$category1 =="Job"){
+      
+      top_job1 = top_job1%>%
+        mutate(m=Job)
+    }else {
+      top_job1 = top_soc1%>%
+        mutate(m=SOC)
+    }
     
-    max_value<-max(top_job1$total)
-    t_job<- top_job1$Job[top_job1$total == max_value]
+    max_value=max(top_job1$total)
+    t_job1= top_job1$m[top_job1$total == max_value]
     
-    valueBox(max_value,t_job, icon = icon("briefcase"),color='purple')
+    valueBox(max_value,t_job1, icon = icon("briefcase"),color='purple')
   })
   
   output$topempbox1 <- renderValueBox({
     
-    max_value<-max(top_emp1$p_emp)
-    t_emp<- top_emp1$Employer[top_emp1$p_emp == max_value]
+    max_value<-max(top_emp1$p)
+    t_emp<- top_emp1$Employer[top_emp1$p == max_value]
     
     valueBox(paste(max_value," %"),t_emp,  icon = icon("building"))
   })
@@ -128,28 +136,19 @@ shinyServer(function(input, output){
   output$job1<-renderGvis({
     if (input$category1 =="Job"){
       
-      top_job1 = fy17 %>%
-        group_by(Job)%>%
-        summarise(total=n())%>%
-        mutate(p= round(total/sum(total)*100,1))%>%
-        arrange(desc(p))%>%
-        head(7,p)}else {
-          top_job1 = fy17 %>%
-            group_by(SOC)%>%
-            summarise(total=n())%>%
-            mutate(p= round(total/sum(total)*100,1))%>%
-            arrange(desc(p))%>%
-            head(7,p)
-        }
-    
-    gvisPieChart(top_job1, labelvar= input$category , numvar="p", 
-                 options=list(height= 220, width=400,is3D=T, title='Top Occupation',fontSize=9))
+      plot_job1 = top_job1
+    }else {
+      plot_job1 = top_soc1
+      
+    }
+    gvisPieChart(plot_job1, labelvar= input$category1 , numvar="p", 
+                 options=list( height=300,is3D=T, title='Top Occupation',fontSize=12))
   })
   
   output$topemp1<-renderGvis({
     
-    gvisPieChart(top_emp1,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer',fontSize=9))
+    gvisPieChart(top_emp1,labelvar = "Employer",numvar = "p" , 
+                 options=list( height=300,is3D=T,title='Top Employer',fontSize=12))
   })
   
   
@@ -167,17 +166,23 @@ shinyServer(function(input, output){
   
   #show statistics using infoBox
   output$topjobbox2 <- renderValueBox({
+    if (input$category2 =="Job"){
+      top_job2 = top_job2%>%
+        mutate(m=Job)
+    }else {
+      top_job2 = top_soc2%>%
+        mutate(m=SOC)
+    }
+    max_value=max(top_job2$total)
+    t_job2= top_job2$m[top_job2$total == max_value]
     
-    max_value<-max(top_job2$total)
-    t_job<- top_job2$Job[top_job2$total == max_value]
-    
-    valueBox(max_value,t_job, icon = icon("briefcase"),color='purple')
+    valueBox(max_value,t_job2, icon = icon("briefcase"),color='purple')
   })
   
   output$topempbox2 <- renderValueBox({
     
-    max_value<-max(top_emp2$p_emp)
-    t_emp<- top_emp2$Employer[top_emp2$p_emp == max_value]
+    max_value<-max(top_emp2$p)
+    t_emp<- top_emp2$Employer[top_emp2$p == max_value]
     
     valueBox(paste(max_value," %"),t_emp,  icon = icon("building"))
   })
@@ -193,28 +198,19 @@ shinyServer(function(input, output){
   output$job2<-renderGvis({
     if (input$category2 =="Job"){
       
-      top_job2 = fy16 %>%
-        group_by(Job)%>%
-        summarise(total=n())%>%
-        mutate(p= round(total/sum(total)*100,1))%>%
-        arrange(desc(p))%>%
-        head(7,p)}else {
-          top_job2 = fy18 %>%
-            group_by(SOC)%>%
-            summarise(total=n())%>%
-            mutate(p= round(total/sum(total)*100,1))%>%
-            arrange(desc(p))%>%
-            head(7,p)
-        }
-    
-    gvisPieChart(top_job2, labelvar= input$category , numvar="p", 
-                 options=list(height= 220, width=400,is3D=T, title='Top Occupation',fontSize=9))
+      plot_job2 = top_job2
+    }else {
+      plot_job2 = top_soc2
+      
+    }
+    gvisPieChart(plot_job2, labelvar= input$category2 , numvar="p", 
+                 options=list(height= 300,is3D=T, title='Top Occupation',fontSize=12))
   })
   
   output$topemp2<-renderGvis({
     
-    gvisPieChart(top_emp2,labelvar = "Employer",numvar = "p_emp" , 
-                 options=list( height=300,is3D=T,title='Top Employer',fontSize=9))
+    gvisPieChart(top_emp2,labelvar = "Employer",numvar = "p" , 
+                 options=list( height=300,is3D=T,title='Top Employer',fontSize=12))
   })
   
   

@@ -1,12 +1,14 @@
 
 
-library(DT)
+
+
 library(shiny)
+library(shinydashboard)
 library(googleVis)
 library(ggplot2)
 library(dplyr)
-library(shinydashboard)
 library(plotly)
+library(DT)
 
 
 
@@ -14,17 +16,15 @@ library(plotly)
 ###load data###
 #h1b
 
-th1b<-read.csv("./data/tr_h1b.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-h1b_2018<-read.csv("./data/H-1BFY2018.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-h1b_2017<-read.csv("./data/H-1BFY2017.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-h1b_2016<-read.csv("./data/H-1BFY2016.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-age<-read.csv("./data/age.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
-education<-read.csv("./data/education.csv",stringsAsFactors=FALSE, encoding = "UTF-8",header = T)
+th1b <-read.csv("./data/tr_h1b.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
+h1b_2018 <-read.csv( "./data/H-1BFY2018.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
+h1b_2017 <-read.csv( "./data/H-1BFY2017.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
+h1b_2016 <-read.csv( "./data/H-1BFY2016.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
+age <-read.csv("./data/age.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
+education <-read.csv("./data/education.csv",stringsAsFactors = FALSE,encoding = "UTF-8",header = T)
 
-nrow(h1b_2018)
-
-clean_amount = function(col){
-  tmp <- gsub(",","",col)
+clean_amount = function(col) {
+  tmp <- gsub(",", "", col)
   tmp <- as.numeric(tmp)
   return (tmp)
 }
@@ -32,196 +32,103 @@ clean_amount = function(col){
 
 ##approval overview
 
-th1b<-th1b%>%mutate(n_Approval=(Approval/max(Approval)))%>%
-  mutate(ratio=round(ratio)/100)
+th1b <- th1b %>% mutate(n_Approval = (Approval / max(Approval))) %>%
+  mutate(ratio = round(ratio) / 100)
 
 #map plot origine country
-country <-read.csv("./data/country_h1b.csv",stringsAsFactors=FALSE,header=T)
-country<-country %>% mutate(H1B=ifelse(H1B=="D",0,ifelse(H1B=="-",0,H1B)))%>%
-  mutate(total=clean_amount(H1B))
+country <-read.csv("./data/country_h1b.csv",stringsAsFactors = FALSE,header = T)
+country <-country %>% mutate(H1B = ifelse(H1B == "D", 0, ifelse(H1B == "-", 0, H1B))) %>%
+  mutate(total = clean_amount(H1B))
 
 
 
-#map plot state 
+#map plot data cleaning
 
+clean_cat <- function(df) {df %>%select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM,SOC_NAME,VISA_CLASS) %>%
+    filter(CASE_STATUS == "CERTIFIED") %>%
+    rename(Employer = EMPLOYER_NAME) %>%
+    rename(Job = JOB_TITLE) %>%
+    mutate(Wage = clean_amount(WAGE_RATE_OF_PAY_FROM)) %>%
+    rename(State = WORKSITE_STATE) %>%
+    rename(SOC = SOC_NAME)
+}
 
-# top_state
-top_state = fy18 %>%
-  group_by(State)%>%
-  summarise(total=n())%>%
-  mutate(p_state= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_state))
 
 #by category
 
-fy18<-h1b_2018 %>%
-  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM,SOC_NAME) %>%
-  filter(CASE_STATUS=="CERTIFIED")%>%
-  rename(Employer=EMPLOYER_NAME)%>%
-  rename(Job = JOB_TITLE)%>%
-  mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
-  rename(State=WORKSITE_STATE)%>%
-  rename(SOC=SOC_NAME)
-colnames(fy18)
+fy18 = clean_cat(h1b_2018)
+
+fy17 <- clean_cat(h1b_2017)
+
+fy16 <- clean_cat(h1b_2016)
 
 
-fy17<-h1b_2017 %>%
-  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM,SOC_NAME,VISA_CLASS) %>%
-  filter(CASE_STATUS=="CERTIFIED" & VISA_CLASS=="H-1B")%>%
-  rename(Employer=EMPLOYER_NAME)%>%
-  rename(Job = JOB_TITLE)%>%
-  mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
-  rename(State=WORKSITE_STATE)%>%
-  rename(SOC=SOC_NAME)
+# top_state
 
-fy16<-h1b_2016 %>%
-  select(JOB_TITLE,WORKSITE_STATE,CASE_STATUS,EMPLOYER_NAME,WAGE_RATE_OF_PAY_FROM,SOC_NAME,VISA_CLASS) %>%
-  filter(CASE_STATUS=="CERTIFIED" & VISA_CLASS=="H-1B")%>%
-  rename(Employer=EMPLOYER_NAME)%>%
-  rename(Job = JOB_TITLE)%>%
-  mutate(Wage= clean_amount(WAGE_RATE_OF_PAY_FROM))%>%
-  rename(State=WORKSITE_STATE)%>%
-  rename(SOC=SOC_NAME)
+top_state = fy18 %>%
+  group_by(State) %>%
+  summarise(total = n()) %>%
+  mutate(p_state = round(total / sum(total) * 100, 1)) %>%
+  arrange(desc(p_state))
 
-#top_employer
-top_emp = fy18 %>%
-  group_by(Employer)%>%
-  summarise(total=n())%>%
-  mutate(p_emp= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_emp))%>%
-  head(7)
+#top_cat cleaning
 
-top_emp1 = fy17 %>%
-  group_by(Employer)%>%
-  summarise(total=n())%>%
-  mutate(p_emp= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_emp))%>%
-  head(7)
+clean_top = function(df1,col_name){
+  df1%>%
+  group_by(get(col_name)) %>%
+  summarise(total = n()) %>%
+  mutate(p = round(total / sum(total) * 100, 1)) %>%
+  arrange(desc(p)) %>%
+  head(20)-> df1
+  return(df1)
+}
 
-top_emp2 = fy16 %>%
-  group_by(Employer)%>%
-  summarise(total=n())%>%
-  mutate(p_emp= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_emp))%>%
-  head(7)
+##top employer
 
-top_emp1
+top_emp <-clean_top(fy18,"Employer")
+top_emp1 = clean_top(fy17,"Employer")
+top_emp2 = clean_top(fy16,"Employer")
+names(top_emp)[1]="Employer"
+names(top_emp1)[1]="Employer"
+names(top_emp2)[1]="Employer"
+##top job
+top_job=clean_top(fy18,"Job")
+top_job1=clean_top(fy17,"Job")
+top_job2=clean_top(fy16,"Job")
+names(top_job)[1]="Job"
+names(top_job1)[1]="Job"
+names(top_job2)[1]="Job"
+##top soc
+top_soc=clean_top(fy18,"SOC")
+top_soc1=clean_top(fy17,"SOC")
+top_soc2=clean_top(fy16,"SOC")
+names(top_soc)[1]="SOC"
+names(top_soc1)[1]="SOC"
+names(top_soc2)[1]="SOC"
+
+
 #range_wage
-##wage rate for h1b 2018
 
-#ave wage 
-options("scipen"=100, "digits"=4)
-range_wage = fy18 %>%
-  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),dig.lab=10,right=FALSE))%>%
-  summarise(total=n())%>%
+clean_wage = function(df1){
+  df1%>%
+  group_by(Wage = cut(Wage, breaks = c(0, 25000, 50000, 75000, 100000, 125000, 150000, 200000, 10000000),
+    labels= c("0-25K","25-50K","50-75K","75-100K","100K-125K","125K-150K","150K-200K","over 200K"),dig.lab = 10)) %>%
+  summarise(total = n()) %>%
   arrange(as.integer(Wage))
+  }
 
-range_wage
-
-#top_job
-
-top_job = fy18 %>%
-  group_by(Job)%>%
-  summarise(total=n())%>%
-  mutate(p_job= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_job))%>%
-  head(10,p_job)
-
-top_job
-
-
-
-#soc
-
-top_soc = fy18 %>%
-  group_by(SOC)%>%
-  summarise(total=n())%>%
-  mutate(p_soc= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_soc))%>%
-  head(10)
-
-top_soc
+range_wage=clean_wage(fy18)
+range_wage1=clean_wage(fy17)
+range_wage2=clean_wage(fy16)
 
 #age
 
 age <- age %>%
-  mutate(total= clean_amount(total))
+  mutate(total = clean_amount(total))
 
-
-#2017
-#ave wage 
-
-range_wage1 = fy17 %>%
-  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),dig.lab=10,right=FALSE))%>%
-  summarise(total=n())%>%
-  arrange(as.integer(Wage))
-
-range_wage1
-
-#top_job
-
-top_job1 = fy17 %>%
-  group_by(Job)%>%
-  summarise(total=n())%>%
-  mutate(p_job= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_job))%>%
-  head(10,p_job)
-
-top_job1
-
-
-
-#soc
-
-top_soc1 = fy17 %>%
-  group_by(SOC)%>%
-  summarise(total=n())%>%
-  mutate(p_soc= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_soc))%>%
-  head(10)
-
-top_soc1
 
 #education
 education <- education %>%
-  mutate(X2017= clean_amount(X2017))%>%
-  mutate(X2016= clean_amount(X2016))
-
-#2016
-#ave wage 
-options("scipen"=100, "digits"=4)
-range_wage2 = fy16 %>%
-  group_by(Wage= cut(Wage,breaks=c(0, 25000, 50000, 75000, 100000,125000,150000,200000,10000000),dig.lab=10,right=FALSE))%>%
-  summarise(total=n())%>%
-  arrange(as.integer(Wage))
-
-range_wage2
-
-#top_job
-
-top_job2 = fy16 %>%
-  group_by(Job)%>%
-  summarise(total=n())%>%
-  mutate(p_job= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_job))%>%
-  head(10,p_job)
-
-top_job2
-
-
-
-#soc
-
-top_soc2 = fy16 %>%
-  group_by(SOC)%>%
-  summarise(total=n())%>%
-  mutate(p_soc= round(total/sum(total)*100,1))%>%
-  arrange(desc(p_soc))%>%
-  head(10)
-
-top_soc2
-
-# create variable with colnames as choice
-choice <- colnames(fy18)
-choice
+  mutate(X2017 = clean_amount(X2017)) %>%
+  mutate(X2016 = clean_amount(X2016))
 
